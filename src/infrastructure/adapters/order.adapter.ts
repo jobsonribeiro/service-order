@@ -5,6 +5,7 @@ import { IOrderPort } from '../../domain/ports/order.port';
 import { OrderDto } from '../../api/dto/order.dto';
 import { Order } from '../entities/order.entity';
 import { OrderProduct } from '../entities/order-product.entity';
+import { OrderEntity } from '../../domain/entities/order.entity';
 
 @Injectable()
 export class OrderAdapter implements IOrderPort {
@@ -15,7 +16,7 @@ export class OrderAdapter implements IOrderPort {
         private readonly orderProductRepository: Repository<OrderProduct>,
     ) { }
 
-    async createOrder(orderDto: OrderDto): Promise<any> {
+    async createOrder(orderDto: OrderDto): Promise<OrderEntity> {
         const { clientId, status, products } = orderDto;
         const order = this.orderRepository.create({ clientId, status });
         const savedOrder = await this.orderRepository.save(order);
@@ -29,7 +30,7 @@ export class OrderAdapter implements IOrderPort {
         });
 
         await this.orderProductRepository.save(orderProducts);
-
+        savedOrder.products = orderProducts;
         return savedOrder;
     }
 

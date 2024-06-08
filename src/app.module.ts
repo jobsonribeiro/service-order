@@ -39,7 +39,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       password: 'dm091u0e2nud876',
       database: 'food_ordering',
       entities: [Order, OrderProduct],
-      synchronize: true,
+      synchronize: false,
     }),
     TypeOrmModule.forFeature([Order, OrderProduct]),
   ],

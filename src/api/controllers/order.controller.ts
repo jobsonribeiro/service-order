@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete, Inject } from '@nestjs
 import { OrderUseCase } from '../../domain/use-cases/order.use-case';
 import { ClientProxy } from '@nestjs/microservices';
 import { OrderDto } from '../dto/order.dto';
+import { OrderEntity } from '../../domain/entities/order.entity';
 
 @Controller('orders')
 export class OrderController {
@@ -9,8 +10,8 @@ export class OrderController {
         @Inject('RABBITMQ_SERVICE') private client: ClientProxy,) { }
 
     @Post()
-    create(@Body() orderDto: OrderDto) {
-        const order =  this.orderUseCase.createOrder(orderDto);
+    async create(@Body() orderDto: OrderDto): Promise<OrderEntity> {
+        const order = await this.orderUseCase.createOrder(orderDto);
         this.client.emit('order_created', order);
         return order;
     }

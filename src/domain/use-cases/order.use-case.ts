@@ -1,12 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { IOrderPort } from '../ports/order.port';
 import { OrderDto } from '../../api/dto/order.dto';
+import { OrderEntity } from '../../domain/entities/order.entity';
 
 @Injectable()
 export class OrderUseCase {
     constructor(@Inject('IOrderPort') private readonly orderPort: IOrderPort) { }
 
-    createOrder(orderDto: OrderDto): Promise<any> {
+    createOrder(orderDto: OrderDto): Promise<OrderEntity> {
         return this.orderPort.createOrder(orderDto);
     }
 
