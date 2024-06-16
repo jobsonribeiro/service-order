@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { IOrderPort } from '../../domain/ports/order.port';
 import { OrderDto } from '../../api/dto/order.dto';
 import { Order } from '../entities/order.entity';
@@ -14,6 +14,7 @@ export class OrderAdapter implements IOrderPort {
         private readonly orderRepository: Repository<Order>,
         @InjectRepository(OrderProduct)
         private readonly orderProductRepository: Repository<OrderProduct>,
+        @InjectDataSource() private dataSource: DataSource,
     ) { }
 
     async createOrder(orderDto: OrderDto): Promise<OrderEntity> {
@@ -69,5 +70,14 @@ export class OrderAdapter implements IOrderPort {
     async deleteOrder(id: string): Promise<void> {
         await this.orderProductRepository.delete({ orderId: Number(id) });
         await this.orderRepository.delete(id);
+    }
+
+    async findOrdersByStatus(): Promise<any[]> {
+        const status = "preparation";
+        const orders = await this.orderRepository.find({
+            where: { status },
+            relations: ['products'],
+        });
+        return orders;
     }
 }

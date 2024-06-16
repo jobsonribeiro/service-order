@@ -26,4 +26,18 @@ export class OrderUseCase {
     deleteOrder(id: string): Promise<void> {
         return this.orderPort.deleteOrder(id);
     }
+
+    async updateOrderStatus(id: string, status: string): Promise<void> {
+        const order = await this.findOrderById(id);
+        if (!order) {
+            throw new Error('Order not found');
+        }
+        const updatedOrderDto: OrderDto = { ...order, status };
+        await this.orderPort.updateOrder(id, updatedOrderDto);
+    }
+
+    async findOrdersByStatus(): Promise<any[]> {
+        
+        return this.orderPort.findOrdersByStatus();
+    }
 }

@@ -7,4 +7,5 @@ export interface IOrderPort {
     findOrderById(id: string): Promise<any>;
     updateOrder(id: string, orderDto: OrderDto): Promise<any>;
     deleteOrder(id: string): Promise<void>;
+    findOrdersByStatus(): Promise<any[]>;
 }

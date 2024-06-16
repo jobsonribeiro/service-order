@@ -31,6 +31,19 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         },
       },
     ]),
+    ClientsModule.register([
+      {
+        name: 'PAYMENT_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: [process.env.RABBITMQ_URI],
+          queue: 'payment_confirm_queue',
+          queueOptions: {
+            durable: false
+          },
+        },
+      },
+    ]),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',

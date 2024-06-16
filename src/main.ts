@@ -2,8 +2,23 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 
 async function bootstrap() {
+
+
+  const microservice = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.RMQ,
+    options: {
+      urls: [process.env.URL_AMQP],
+      queue: 'payment_confirm_queue',
+      queueOptions: {
+        durable: false,
+      },
+    },
+  });
+
+  microservice.listen();
   const app = await NestFactory.create(AppModule);
 
   const config = app.get(ConfigService);
