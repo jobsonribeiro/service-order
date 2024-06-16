@@ -11,7 +11,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [process.env.URL_AMQP],
-      queue: 'payment_confirm_queue',
+      queue: 'payment_confirm_queue, order_finish_queue',
       queueOptions: {
         durable: false,
       },
@@ -19,6 +19,19 @@ async function bootstrap() {
   });
 
   microservice.listen();
+
+  const microserviceOrder = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    transport: Transport.RMQ,
+    options: {
+      urls: [process.env.URL_AMQP],
+      queue: 'order_finish_queue',
+      queueOptions: {
+        durable: false,
+      },
+    },
+  });
+
+  microserviceOrder.listen();
   const app = await NestFactory.create(AppModule);
 
   const config = app.get(ConfigService);
