@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Inject } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Inject, UsePipes } from '@nestjs/common';
 import { OrderUseCase } from '../../domain/use-cases/order.use-case';
 import { ClientProxy, Ctx, MessagePattern, Payload, RmqContext } from '@nestjs/microservices';
 import { OrderDto } from '../dto/order.dto';
 import { OrderEntity } from '../../domain/entities/order.entity';
 import * as sgMail from '@sendgrid/mail';
+import { SanitizePipe } from '../../pipes/sanitize.pipe';
 
 @Controller('orders')
 export class OrderController {
@@ -13,6 +14,7 @@ export class OrderController {
         sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     }
 
+    @UsePipes(new SanitizePipe())
     @Post()
     async create(@Body() orderDto: OrderDto): Promise<OrderEntity> {
         const order = await this.orderUseCase.createOrder(orderDto);
@@ -21,16 +23,19 @@ export class OrderController {
     }
 
     @Get()
+    @UsePipes(new SanitizePipe())
     findAll() {
         return this.orderUseCase.findAllOrders();
     }
 
     @Put(':id')
+    @UsePipes(new SanitizePipe())
     update(@Param('id') id: string, @Body() orderDto: OrderDto) {
         return this.orderUseCase.updateOrder(id, orderDto);
     }
 
     @Delete(':id')
+    @UsePipes(new SanitizePipe())
     remove(@Param('id') id: string) {
         return this.orderUseCase.deleteOrder(id);
     }
@@ -56,6 +61,7 @@ export class OrderController {
     }
 
     @Get('preparation')
+    @UsePipes(new SanitizePipe())
     async findOrdersInPreparation() {
         return this.orderUseCase.findOrdersByStatus();
     }
@@ -64,7 +70,7 @@ export class OrderController {
 
         const subject = 'Seu pagamento foi aprovado!';
         const text = 'Obrigado por seu pagamento. Seu pedido está sendo processado.';
-        
+         
         const msg = {
             to: email || "jobson.analistati@gmail.com",
             from: 'projetofiapfoodie@gmail.com', // Use the email you registered with SendGrid

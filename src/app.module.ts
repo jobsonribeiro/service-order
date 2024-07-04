@@ -1,5 +1,5 @@
 
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { HealthController } from 'src/api/controllers/health.controller';
 import { ConfigModule } from '@nestjs/config';
 import Configuration from 'src/config/config';
@@ -11,6 +11,7 @@ import { Order } from './infrastructure/entities/order.entity';
 import { OrderProduct } from './infrastructure/entities/order-product.entity';
 import { rabbitmqConfig } from './config/rabbitmq.config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { UserAgentMiddleware } from './middleware/user-agent.middleware';
 
 @Module({
   imports: [
@@ -62,4 +63,10 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     { provide: 'IOrderPort', useClass: OrderAdapter },
   ],
 })
-export class AppModule { }
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(UserAgentMiddleware)
+      .forRoutes('*');
+  }
+}

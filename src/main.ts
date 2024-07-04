@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import helmet from 'helmet';
 
 async function bootstrap() {
 
@@ -11,7 +12,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [process.env.URL_AMQP],
-      queue: 'payment_confirm_queue, order_finish_queue',
+      queue: 'payment_confirm_queue',
       queueOptions: {
         durable: false,
       },
@@ -33,6 +34,23 @@ async function bootstrap() {
 
   microserviceOrder.listen();
   const app = await NestFactory.create(AppModule);
+
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'"],
+        objectSrc: ["'none'"],
+        frameSrc: ["'self'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"]
+      }
+    }
+  }));
 
   const config = app.get(ConfigService);
   
