@@ -11,10 +11,20 @@ import { Order } from './infrastructure/entities/order.entity';
 import { OrderProduct } from './infrastructure/entities/order-product.entity';
 import { rabbitmqConfig } from './config/rabbitmq.config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { UserAgentMiddleware } from './middleware/user-agent.middleware';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './config/jwt.strategy';
+import { Client } from './domain/entities/client.entity';
+import { ClientController } from './api/controllers/client.controller';
+import { ClientService } from './domain/use-cases/client.service';
 
 @Module({
   imports: [
+    PassportModule,
+    JwtModule.register({
+      secret: 'UiHUigyEe8b22XPvdhPEQlUXHBEjjJSUQIihTPkUpmbEphpFQ8CQO8FrWyg6U416W1CnlYWNO7yxhs60Zf7XHA==',
+      signOptions: { expiresIn: '60m' },
+    }),
     ConfigModule.forRoot({
       load: [Configuration],
       isGlobal: true,
@@ -52,16 +62,20 @@ import { UserAgentMiddleware } from './middleware/user-agent.middleware';
       username: 'orderuser',
       password: 'dm091u0e2nud876',
       database: 'food_ordering',
-      entities: [Order, OrderProduct],
+      entities: [Order, OrderProduct, Client],
+      autoLoadEntities: true,
       synchronize: true,
     }),
-    TypeOrmModule.forFeature([Order, OrderProduct]),
+    TypeOrmModule.forFeature([Order, OrderProduct, Client]),
   ],
-  controllers: [HealthController, OrderController],
+  controllers: [HealthController, OrderController, ClientController],
   providers: [
+    ClientService,
+    JwtStrategy,
     OrderUseCase,
     { provide: 'IOrderPort', useClass: OrderAdapter },
   ],
+  exports: [JwtModule, PassportModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
