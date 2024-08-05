@@ -1,0 +1,64 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:us-east-2:339712853459:task-definition/foodie-task:1",
+  "containerDefinitions": [
+    {
+      "name": "foodie_production",
+      "image": "339712853459.dkr.ecr.us-east-2.amazonaws.com/foodie_order:20240520185321",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "foodie_production-3000-tcp",
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "ulimits": [],
+      "systemControls": []
+    }
+  ],
+  "family": "foodie-task",
+  "executionRoleArn": "arn:aws:iam::339712853459:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "revision": 1,
+  "volumes": [],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "requiresCompatibilities": [
+    "EC2",
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "3072",
+  "runtimePlatform": {
+    "cpuArchitecture": "X86_64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "registeredAt": "2024-05-20T23:35:02.988Z",
+  "registeredBy": "arn:aws:iam::339712853459:user/JobsonRibeiro",
+  "tags": []
+}
