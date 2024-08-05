@@ -18,7 +18,16 @@ export class OrderController {
     @Post()
     async create(@Body() orderDto: OrderDto): Promise<OrderEntity> {
         const order = await this.orderUseCase.createOrder(orderDto);
-        this.client.emit('order_created', order);
+        
+        const data = {
+            clientId: order.clientId,
+            status: order.status,
+            id: order.id,
+            clientEmail: orderDto.clientEmail,
+            clientName: orderDto.clientName,
+            products: order.products,
+        }
+        this.client.emit('order_created', data);
         return order;
     }
 
@@ -56,7 +65,6 @@ export class OrderController {
 
         const decodedContent = Buffer.from(content, 'base64').toString('utf-8');
         const requestBodyObject = JSON.parse(decodedContent);
-        //await this.sendEmailNotification(paymentInfo.payer.email, paymentInfo.status);
         return this.orderUseCase.updateOrderStatus(requestBodyObject.data.orderId, 'finish');
     }
 
@@ -64,25 +72,5 @@ export class OrderController {
     @UsePipes(new SanitizePipe())
     async findOrdersInPreparation() {
         return this.orderUseCase.findOrdersByStatus();
-    }
-
-    private async sendEmailNotification(email: string): Promise<void> {
-
-        const subject = 'Seu pagamento foi aprovado!';
-        const text = 'Obrigado por seu pagamento. Seu pedido está sendo processado.';
-         
-        const msg = {
-            to: email || "jobson.analistati@gmail.com",
-            from: 'projetofiapfoodie@gmail.com', // Use the email you registered with SendGrid
-            subject: subject,
-            text: text,
-        };
-
-        try {
-            await sgMail.send(msg);
-            console.log('Email enviado com sucesso');
-        } catch (error) {
-            console.error('Erro ao enviar email:', error);
-        }
     }
 }

@@ -7,6 +7,7 @@ const dompurify = DOMPurify(window);
 
 @Injectable()
 export class SanitizePipe implements PipeTransform {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   transform(value: any, metadata: ArgumentMetadata) {
     if (typeof value === 'string') {
       return dompurify.sanitize(value);

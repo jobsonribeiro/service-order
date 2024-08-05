@@ -12,7 +12,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [process.env.URL_AMQP],
-      queue: 'payment_confirm_queue',
+      queue: process.env.ORDER_FINISH_QUEUE,
       queueOptions: {
         durable: false,
       },
@@ -25,7 +25,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: [process.env.URL_AMQP],
-      queue: 'order_finish_queue',
+      queue: process.env.ORDER_FINISH_QUEUE,
       queueOptions: {
         durable: false,
       },

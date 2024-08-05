@@ -17,6 +17,7 @@ import { JwtStrategy } from './config/jwt.strategy';
 import { Client } from './domain/entities/client.entity';
 import { ClientController } from './api/controllers/client.controller';
 import { ClientService } from './domain/use-cases/client.service';
+import { UserAgentMiddleware } from './middleware/user-agent.middleware';
 
 @Module({
   imports: [
@@ -48,7 +49,7 @@ import { ClientService } from './domain/use-cases/client.service';
         transport: Transport.RMQ,
         options: {
           urls: [process.env.RABBITMQ_URI],
-          queue: 'payment_confirm_queue',
+          queue: process.env.PAYMENT_QUEUE,
           queueOptions: {
             durable: false
           },
@@ -57,13 +58,12 @@ import { ClientService } from './domain/use-cases/client.service';
     ]),
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 3306,
-      username: 'orderuser',
-      password: 'dm091u0e2nud876',
-      database: 'food_ordering',
-      entities: [Order, OrderProduct, Client],
-      autoLoadEntities: true,
+      host: process.env.DB_HOST,
+      port: Number(process.env.DB_PORT),
+      username: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [Order, OrderProduct],
       synchronize: true,
     }),
     TypeOrmModule.forFeature([Order, OrderProduct, Client]),

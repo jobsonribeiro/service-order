@@ -27,6 +27,7 @@ export class OrderAdapter implements IOrderPort {
                 orderId: savedOrder.id,
                 productId: product.id,
                 quantity: product.quantity,
+                price: product.price,
             });
         });
 

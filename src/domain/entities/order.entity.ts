@@ -11,5 +11,7 @@ export class OrderEntity {
 
   @Expose()
   clientId: number;
+    
+  products: any;
   
 }
